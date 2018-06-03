@@ -5,8 +5,9 @@ const davehttp = require ("davehttp");
 const utils = require ("daveutils"); 
 
 var config = {
-	port: 1401,
-	flLogToConsole: true
+	port: 5393,
+	flLogToConsole: true,
+	flAllowAccessFromAnywhere: true
 	}
 
 davehttp.start (config, function (theRequest) {
@@ -14,7 +15,10 @@ davehttp.start (config, function (theRequest) {
 		case "/httpreadurl":
 			var url = theRequest.params.url, type = theRequest.params.type, whenstart = new Date ();
 			request (url, function (err, response, body) {
-				console.log ("url == " + url + ", response.statusCode == " + code + ", secs == " + utils.secondsSince (whenstart));
+				console.log ("url == " + url + ", code == " + response.statusCode + ", secs == " + utils.secondsSince (whenstart));
+				if (err) {
+					console.log ("err.message == " + err.message);
+					}
 				if (type === undefined) {
 					type = response.headers ["content-type"];
 					if (type === undefined) {
