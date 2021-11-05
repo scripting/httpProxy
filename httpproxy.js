@@ -1,4 +1,4 @@
-const productName = "httpProxy", version = "0.4.0";
+const productName = "httpProxy", version = "0.4.2"; 
 
 const request = require ("request"); 
 const davehttp = require ("davehttp"); 
@@ -15,17 +15,24 @@ davehttp.start (config, function (theRequest) {
 		case "/httpreadurl":
 			var url = theRequest.params.url, type = theRequest.params.type, whenstart = new Date ();
 			request (url, function (err, response, body) {
-				console.log ("url == " + url + ", code == " + response.statusCode + ", secs == " + utils.secondsSince (whenstart));
 				if (err) {
 					console.log ("err.message == " + err.message);
+					theRequest.httpReturn (500, "text/plain", err.message);
 					}
-				if (type === undefined) {
-					type = response.headers ["content-type"];
+				else {
 					if (type === undefined) {
-						type = "text/plain";
+						type = response.headers ["content-type"];
+						if (type === undefined) {
+							type = "text/plain";
+							}
+						}
+					try {
+						theRequest.httpReturn (response.statusCode, type, body);
+						}
+					catch (err) {
+						console.log ("Error calling theRequest.httpReturn: " + err.message);
 						}
 					}
-				theRequest.httpReturn (response.statusCode, type, body);
 				});
 			return;
 		case "/now":
