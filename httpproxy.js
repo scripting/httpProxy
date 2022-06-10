@@ -1,43 +1,35 @@
-const productName = "httpProxy", version = "0.4.2"; 
+const productName = "httpProxy", version = "0.4.3"; 
 
 const request = require ("request"); 
 const davehttp = require ("davehttp"); 
 const utils = require ("daveutils"); 
 
 var config = {
-	port: 5393,
+	port: process.env.PORT || 5393,
 	flLogToConsole: true,
 	flAllowAccessFromAnywhere: true
 	}
 
-davehttp.start (config, function (theRequest) {
+function handleHttpRequest (theRequest) {
+	const params = theRequest.params, whenstart = new Date ();
 	switch (theRequest.lowerpath) {
 		case "/httpreadurl":
-			var url = theRequest.params.url, type = theRequest.params.type, whenstart = new Date ();
-			request (url, function (err, response, body) {
+			request (params.url, function (err, response, body) {
 				if (err) {
-					console.log ("err.message == " + err.message);
 					theRequest.httpReturn (500, "text/plain", err.message);
 					}
 				else {
-					if (type === undefined) {
-						type = response.headers ["content-type"];
-						if (type === undefined) {
-							type = "text/plain";
-							}
-						}
-					try {
-						theRequest.httpReturn (response.statusCode, type, body);
-						}
-					catch (err) {
-						console.log ("Error calling theRequest.httpReturn: " + err.message);
-						}
+					theRequest.httpReturn (response.statusCode, "text/plain", body);
 					}
 				});
-			return;
+			break;
 		case "/now":
 			theRequest.httpReturn (200, "text/plain", new Date ());
-			return;
+			break;
+		default:
+			theRequest.httpReturn (404, "text/plain", "Not found.");
+			break;
 		}
-	theRequest.httpReturn (404, "text/plain", "Not found.");
-	});
+	}
+
+davehttp.start (config, handleHttpRequest);

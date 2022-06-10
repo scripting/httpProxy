@@ -1,9 +1,9 @@
 {
 	"name": "httpProxy",
 	"description": "A proxy for HTTP calls from browser-based apps.",
-	"author": "Dave Winer <dave@smallpicture.com>",
+	"author": "Dave Winer <dave@scripting.com>",
 	"license": "MIT",
-	"version": "0.4.2",
+	"version": "0.4.3",
 	"main": "httpproxy.js",
 	"dependencies" : {
 		"daveutils": "*",
