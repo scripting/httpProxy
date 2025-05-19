@@ -1,4 +1,4 @@
-const productName = "httpProxy", version = "0.4.3"; 
+const productName = "httpProxy", version = "0.4.4"; 
 
 const request = require ("request"); 
 const davehttp = require ("davehttp"); 
@@ -10,9 +10,6 @@ var config = {
 	flPostEnabled: true,
 	flAllowAccessFromAnywhere: true
 	}
-
-
-
 
 function handleHttpRequest (theRequest) {
 	const params = theRequest.params, whenstart = new Date ();
@@ -42,6 +39,21 @@ function handleHttpRequest (theRequest) {
 	switch (theRequest.lowermethod) {
 		case "get":
 			switch (theRequest.lowerpath) {
+				case "/": //5/19/25 by DW
+					const options = {
+						url: params.url,
+						encoding: null
+						};
+					request (options, function (err, response, body) {
+						if (err) {
+							theRequest.httpReturn (500, "text/plain", err.message);
+							}
+						else {
+							const type = response.headers ["content-type"];
+							theRequest.httpReturn (response.statusCode, type, body);
+							}
+						});
+					break;
 				case "/httpreadurl":
 					request (params.url, function (err, response, body) {
 						if (err) {
